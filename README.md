@@ -16,17 +16,17 @@ import (
     "runtime"
     "fmt"
 
-    "idgenter"
+    "github.com/zhwq001/idgen"
  )
 
 
 func main() {
     runtime.GOMAXPROCS(8)
-    genter := idgenter.NewIdGener('d')
-    id     := genter.Gen()
+    gen := idgen.NewIdGener('d')
+    id     := gen.Gen()
     fmt.Printf("%d\n", id)
     //ID里面取时间
-    fmt.Println(idgenter.GetTimeFromId(id))
+    fmt.Println(idgen.GetTimeFromId(id))
 }
 ```
 

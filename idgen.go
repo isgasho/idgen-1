@@ -7,7 +7,7 @@ package idgen
 import (
 	"errors"
 	"math/rand"
-	"sync/atomic"
+	"sync"
 	"time"
 )
 
