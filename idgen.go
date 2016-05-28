@@ -32,7 +32,7 @@ type ID struct {
 	Num        int64
 }
 
-func NewIdGen(i byte) *IdGen {
+func NewIdGen(i int8) *IdGen {
 	temp := &ID{
 		Version:    VERSION,
 		Instanceid: int64(i),

@@ -1,6 +1,8 @@
 package idgen
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 	"time"
 )
@@ -27,6 +29,62 @@ func TestDecodeAndEncode(t *testing.T) {
 	if id != id2 {
 		t.Fatalf("Decode or encode fail")
 	}
+}
+
+func BencmarkGenpb(b *testing.B) {
+	b.StopTimer()
+	genter := NewIdGen('i')
+	b.StartTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		if pb.Next() {
+			genter.Gen()
+		}
+	})
+}
+
+type d struct {
+	m *sync.Mutex
+	s map[int64]int
+}
+
+func (d *d) Set(i int64) error {
+	d.m.Lock()
+	defer d.m.Unlock()
+	if _, ok := d.s[i]; ok {
+		return fmt.Errorf("i:%d exists!", i)
+	}
+	d.s[i] = 1
+	return nil
+}
+
+func TestParalle(t *testing.T) {
+	N := 5000000
+	a := &d{
+		m: new(sync.Mutex),
+		s: make(map[int64]int, N),
+	}
+
+	genter := NewIdGen('i')
+
+	for i := 0; i < N; i++ {
+		go func() {
+			id := genter.Gen()
+			if err := a.Set(id); err != nil {
+				t.Fatalf("Paralle error:%v", err)
+			}
+		}()
+	}
+}
+
+func BencmarkGenpb(b *testing.B) {
+	b.StopTimer()
+	genter := NewIdGen('i')
+	b.StartTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		if pb.Next() {
+			genter.Gen()
+		}
+	})
 }
 
 func TestGetTimeFromId(t *testing.T) {
