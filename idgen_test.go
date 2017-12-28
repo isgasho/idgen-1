@@ -9,7 +9,7 @@ import (
 
 func TestGen(t *testing.T) {
 	genter := NewIdGen('t')
-	id := genter.Gen()
+	id := genter.Gen(3)
 	if id <= 0 {
 		t.Fatalf("Genter nagetive number %d\n", id)
 	}
@@ -17,7 +17,7 @@ func TestGen(t *testing.T) {
 
 func TestDecodeAndEncode(t *testing.T) {
 	genter := NewIdGen('i')
-	id := genter.Gen()
+	id := genter.Gen(5)
 	d, e := Decode(id)
 	if e != nil {
 		t.Fatalf("Decode error %s\n", e.Error())
@@ -37,7 +37,7 @@ func BencmarkGenpb(b *testing.B) {
 	b.StartTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		if pb.Next() {
-			genter.Gen()
+			genter.Gen(2)
 		}
 	})
 }
@@ -68,7 +68,7 @@ func TestParalle(t *testing.T) {
 
 	for i := 0; i < N; i++ {
 		go func() {
-			id := genter.Gen()
+			id := genter.Gen(6)
 			if err := a.Set(id); err != nil {
 				t.Fatalf("Paralle error:%v", err)
 			}
@@ -76,20 +76,9 @@ func TestParalle(t *testing.T) {
 	}
 }
 
-func BencmarkGenpb(b *testing.B) {
-	b.StopTimer()
-	genter := NewIdGen('i')
-	b.StartTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		if pb.Next() {
-			genter.Gen()
-		}
-	})
-}
-
 func TestGetTimeFromId(t *testing.T) {
 	genter := NewIdGen('t')
-	id := genter.Gen()
+	id := genter.Gen(7)
 	timestamp, err := GetTimeFromId(id)
 	if timestamp > time.Now().Unix() || timestamp < time.Now().Unix()-1 {
 		t.Fatal("Genter id format  error", err, timestamp, id)
@@ -101,7 +90,7 @@ func BenchmarkGenDecodeEncode(b *testing.B) {
 	genter := NewIdGen('i')
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		id := genter.Gen()
+		id := genter.Gen(8)
 		d, _ := Decode(id)
 		id2, _ := Encode(d)
 		if id != id2 {
@@ -116,6 +105,6 @@ func BenchmarkGen(b *testing.B) {
 	b.StartTimer()
 
 	for i := 0; i < b.N; i++ {
-		genter.Gen()
+		genter.Gen(9)
 	}
 }
